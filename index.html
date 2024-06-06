@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Kaloryczny</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 50px;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        header a {
+            text-decoration: none;
+            color: #28a745;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        #calorie-form {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        #calorie-form h1 {
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #333;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input, select {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            background-color: #28a745;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        #results {
+            display: none;
+            margin-top: 20px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        #results p {
+            margin: 0 0 10px;
+            font-size: 16px;
+            color: #333;
+        }
+        #back-button {
+            margin-top: 20px;
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        #back-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="http://www.eat-fit.com.pl" target="_blank">www.eat-fit.com.pl</a>
+    </header>
+
+    <form id="calorie-form">
+        <h1>Kalkulator Zapotrzebowania Kalorycznego</h1>
+        <label for="gender">Płeć:</label>
+        <select id="gender">
+            <option value="male">Mężczyzna</option>
+            <option value="female">Kobieta</option>
+        </select>
+
+        <label for="age">Wiek:</label>
+        <input type="number" id="age" required>
+
+        <label for="weight">Waga (kg):</label>
+        <input type="number" id="weight" required>
+
+        <label for="height">Wzrost (cm):</label>
+        <input type="number" id="height" required>
+
+        <label for="steps">Ilość kroków dziennie:</label>
+        <input type="number" id="steps" required>
+
+        <label for="strength-training">Ilość treningów siłowych w tygodniu:</label>
+        <input type="number" id="strength-training" required>
+
+        <label for="cardio-training">Ilość treningów cardio w tygodniu:</label>
+        <input type="number" id="cardio-training" required>
+
+        <button type="button" onclick="calculateCalories()">Oblicz</button>
+    </form>
+
+    <div id="results">
+        <h2>Wyniki:</h2>
+        <p id="ppm"></p>
+        <p id="cpm"></p>
+        <p id="calories-to-lose"></p>
+        <p id="calories-to-maintain"></p>
+        <p id="calories-to-gain"></p>
+    </div>
+
+    <a id="back-button" href="http://www.eat-fit.com.pl">Powrót na www.eat-fit.com.pl</a>
+
+    <script>
+        function calculateCalories() {
+            const gender = document.getElementById('gender').value;
+            const age = parseInt(document.getElementById('age').value);
+            const weight = parseInt(document.getElementById('weight').value);
+            const height = parseInt(document.getElementById('height').value);
+            const steps = parseInt(document.getElementById('steps').value);
+            const strengthTraining = parseInt(document.getElementById('strength-training').value);
+            const cardioTraining = parseInt(document.getElementById('cardio-training').value);
+
+            let ppm;
+
+            if (gender === 'male') {
+                ppm = 88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * age);
+            } else {
+                ppm = 447.593 + (9.247 * weight) + (3.098 * height) - (4.330 * age);
+            }
+
+            const stepsFactor = steps >= 10000 ? 1.2 : steps >= 5000 ? 1.1 : 1.0;
+            const strengthFactor = strengthTraining > 3 ? 1.4 : strengthTraining > 1 ? 1.2 : 1.1;
+            const cardioFactor = cardioTraining > 3 ? 1.4 : cardioTraining > 1 ? 1.2 : 1.1;
+
+            const activityFactor = stepsFactor * strengthFactor * cardioFactor;
+            const cpm = ppm * activityFactor;
+
+            const caloriesToLose = cpm - 300;
+            const caloriesToMaintain = cpm;
+            const caloriesToGain = cpm + 300;
+
+            document.getElementById('ppm').innerText = `Podstawowa Przemiana Materii (PPM): ${ppm.toFixed(2)} kcal`;
+            document.getElementById('cpm').innerText = `Całkowita Przemiana Materii (CPM): ${cpm.toFixed(2)} kcal`;
+            document.getElementById('calories-to-lose').innerText = `Kalorie do utraty wagi: ${caloriesToLose.toFixed(2)} kcal`;
+            document.getElementById('calories-to-maintain').innerText = `Kalorie do utrzymania wagi: ${caloriesToMaintain.toFixed(2)} kcal`;
+            document.getElementById('calories-to-gain').innerText = `Kalorie do przybrania na wadze: ${caloriesToGain.toFixed(2)} kcal`;
+
+            document.getElementById('results').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
